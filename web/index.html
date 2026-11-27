@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11120f">
+  <meta name="description" content="TweenSlop Studio — локальный редактор коротких видео">
+  <title>TweenSlop Studio</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="rail" aria-label="Навигация">
+      <a class="brand" href="/" aria-label="TweenSlop Studio">
+        <span class="brand-mark">t<span>·</span></span>
+        <span class="brand-caption">STUDIO</span>
+      </a>
+      <nav class="rail-nav">
+        <button class="rail-button active" data-panel="media" title="Медиа" aria-label="Медиа">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="3"></rect><path d="m10 8 6 4-6 4z"></path></svg>
+          <span>Медиа</span>
+        </button>
+        <button class="rail-button" data-panel="text" title="Текст и стикеры" aria-label="Текст и стикеры">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M12 6v13M8.5 19h7"></path><path d="M8 6 6.5 9M16 6l1.5 3"></path></svg>
+          <span>Текст</span>
+        </button>
+        <button class="rail-button" data-panel="effects" title="Эффекты" aria-label="Эффекты">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Z"></path><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"></path></svg>
+          <span>Эффекты</span>
+        </button>
+        <button class="rail-button" data-panel="plugins" title="Плагины" aria-label="Плагины">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v4M15 4v4M8 8h8v4a4 4 0 0 1-4 4v4M8 8H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h3"></path><path d="M16 12h3a2 2 0 0 1 2 2v2"></path></svg>
+          <span>Плагины</span>
+        </button>
+      </nav>
+      <div class="rail-bottom">
+        <span class="local-indicator" title="Медиа остаются в браузере"></span>
+        <span>LOCAL</span>
+      </div>
+    </aside>
+
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="project-heading">
+          <div class="crumb">ПРОЕКТ <span>/</span> МОНТАЖ</div>
+          <input id="projectName" class="project-name" aria-label="Название проекта" value="Первый монтаж" maxlength="60">
+          <span class="save-state" id="saveState"><i></i>Все изменения сохранены</span>
+        </div>
+        <div class="top-actions">
+          <div class="history-actions">
+            <button class="icon-button" id="undoBtn" title="Отменить" aria-label="Отменить" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10a6 6 0 0 1 0 12h-2"></path></svg></button>
+            <button class="icon-button" id="redoBtn" title="Повторить" aria-label="Повторить" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"></path><path d="M20 9H10a6 6 0 0 0 0 12h2"></path></svg></button>
+          </div>
+          <div class="top-divider"></div>
+          <label class="ratio-label" for="ratioSelect">ХОЛСТ</label>
+          <select id="ratioSelect" class="select-dark" aria-label="Формат кадра">
+            <option value="9:16">9:16 вертикальный</option>
+            <option value="16:9">16:9 широкий</option>
+            <option value="1:1">1:1 квадрат</option>
+            <option value="4:5">4:5 портрет</option>
+          </select>
+          <button id="saveBtn" class="save-button" title="Сохранить проект"><svg viewBox="0 0 24 24"><path d="M5 3h12l3 3v15H4V4a1 1 0 0 1 1-1Z"></path><path d="M8 3v6h8V3M8 21v-7h8v7"></path></svg><span>Сохранить</span></button>
+          <button id="exportBtn" class="export-button"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4"></path><path d="M5 17v3h14v-3"></path></svg><span>Экспорт</span><b>↗</b></button>
+        </div>
+      </header>
+
+      <section class="editor-area" aria-label="Редактор">
+        <aside class="library-pane">
+          <div id="panelContent" class="panel-content"></div>
+        </aside>
+
+        <main class="stage-area">
+          <div class="stage-toolbar">
+            <div class="stage-label"><span class="eyebrow">ПРЕДПРОСМОТР</span><span class="live-pill"><i></i> LIVE</span></div>
+            <div class="stage-tools">
+              <span id="stageRatio" class="stage-ratio">9:16</span>
+              <button id="fitPreviewBtn" class="tiny-icon" aria-label="Вписать предпросмотр" title="Вписать предпросмотр"><svg viewBox="0 0 24 24"><path d="M8 4H4v4M16 4h4v4M4 16v4h4m12-4v4h-4"></path></svg></button>
+            </div>
+          </div>
+          <div class="preview-zone">
+            <div class="preview-grid" aria-hidden="true"></div>
+            <div id="previewSurface" class="preview-surface">
+              <canvas id="previewCanvas" width="1080" height="1920" aria-label="Предпросмотр видео"></canvas>
+              <div class="surface-badge">TWEEN<span>SLOP</span></div>
+            </div>
+            <div class="transport">
+              <button id="playBtn" class="play-button" title="Воспроизвести / пауза" aria-label="Воспроизвести"><svg id="playIcon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"></path></svg></button>
+              <div class="transport-time"><strong id="currentTimeLabel">00:00.00</strong><span>/</span><span id="durationLabel">00:00.00</span></div>
+              <div class="transport-spacer"></div>
+              <span class="preview-quality">PREVIEW&nbsp; · &nbsp;<b>1080P</b></span>
+            </div>
+          </div>
+          <div class="stage-foot">
+            <span class="hint"><kbd>ПРОБЕЛ</kbd> воспроизвести <span>·</span> <kbd>⌘/CTRL Z</kbd> отменить</span>
+            <span id="resolutionLabel">1080 × 1920 · 30 FPS</span>
+          </div>
+        </main>
+
+        <aside class="inspector-pane">
+          <div class="inspector-top">
+            <div><span class="eyebrow">СВОЙСТВА</span><h2 id="inspectorTitle">Проект</h2></div>
+            <span class="inspector-mark">✳</span>
+          </div>
+          <div id="inspectorContent" class="inspector-content"></div>
+        </aside>
+      </section>
+
+      <section class="timeline-panel" aria-label="Таймлайн">
+        <div class="timeline-header">
+          <div class="timeline-title"><span class="timeline-icon">⌁</span><strong>ТАЙМЛАЙН</strong><span class="timeline-sep">/</span><span id="clipCount">0 СЛОЁВ</span></div>
+          <div class="timeline-actions">
+            <button id="splitBtn" class="timeline-action" title="Разделить выбранный клип (S)" disabled><span>⌁</span>Разделить</button>
+            <button id="duplicateBtn" class="timeline-action" title="Дублировать выбранный клип" disabled><span>▣</span>Дублировать</button>
+            <button id="deleteBtn" class="timeline-action danger" title="Удалить выбранный клип (Delete)" disabled><span>×</span>Удалить</button>
+            <div class="timeline-divider"></div>
+            <button id="zoomOutBtn" class="zoom-button" aria-label="Уменьшить масштаб">−</button>
+            <div class="zoom-track"><span id="zoomFill"></span></div>
+            <button id="zoomInBtn" class="zoom-button" aria-label="Увеличить масштаб">+</button>
+          </div>
+        </div>
+        <div id="timelineScroll" class="timeline-scroll">
+          <div id="timelineInner" class="timeline-inner">
+            <div id="timelineRuler" class="timeline-ruler"></div>
+            <div id="timelineTracks" class="timeline-tracks"></div>
+            <div id="playhead" class="playhead"><div class="playhead-grip"></div><div class="playhead-line"></div></div>
+          </div>
+        </div>
+        <div class="timeline-footer">
+          <div class="track-legend"><span><i class="legend-video"></i>ВИДЕО</span><span><i class="legend-text"></i>ГРАФИКА</span><span><i class="legend-audio"></i>АУДИО</span></div>
+          <span class="timeline-hint">Перетащи файл в редактор или нажми <kbd>+</kbd> на медиа</span>
+          <span class="timeline-fps">30 <small>FPS</small></span>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <input id="fileInput" type="file" accept="video/*,audio/*,image/*" multiple hidden>
+  <input id="pluginInput" type="file" accept=".js,.mjs,text/javascript" hidden>
+  <input id="projectInput" type="file" accept="application/json,.json" hidden>
+  <div id="mediaBin" class="media-bin" aria-hidden="true"></div>
+  <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <div id="exportModal" class="modal-backdrop" hidden>
+    <div class="export-modal" role="dialog" aria-modal="true" aria-labelledby="exportTitle">
+      <div class="modal-symbol">↗</div>
+      <button id="closeExportModal" class="modal-close" aria-label="Закрыть">×</button>
+      <span class="eyebrow">ГОТОВЫЙ РОЛИК</span>
+      <h2 id="exportTitle">Экспорт видео</h2>
+      <p>Соберём таймлайн в один файл. Экспорт идёт в реальном времени — не закрывайте вкладку.</p>
+      <div class="export-summary"><span>ФОРМАТ</span><strong>WEBM · 1080P</strong><span>ДЛИТЕЛЬНОСТЬ</span><strong id="exportDuration">00:00</strong></div>
+      <div id="exportProgressWrap" class="export-progress-wrap" hidden><div class="export-progress"><span id="exportProgress"></span></div><small id="exportProgressLabel">Подготовка…</small></div>
+      <div class="modal-actions"><button id="cancelExportBtn" class="button-quiet">Отмена</button><button id="startExportBtn" class="button-lime">Начать экспорт <span>↗</span></button></div>
+      <small class="modal-note">Видео обрабатывается локально в браузере</small>
+    </div>
+  </div>
+</body>
+</html>
