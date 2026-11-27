@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import json
 import mimetypes
+import threading
+import webbrowser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
@@ -94,12 +96,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run TweenSlop Studio locally")
     parser.add_argument("--host", default="0.0.0.0", help="bind address (default: 0.0.0.0)")
     parser.add_argument("--port", type=int, default=8000, help="port (default: 8000)")
+    parser.add_argument("--open", action="store_true", help="open the local editor in your default browser")
     args = parser.parse_args()
     mimetypes.add_type("text/javascript", ".js")
     mimetypes.add_type("text/javascript", ".mjs")
     server = ThreadingHTTPServer((args.host, args.port), StudioHandler)
-    print(f"TweenSlop Studio is ready at http://{args.host}:{args.port}")
+    display_host = "localhost" if args.host in {"0.0.0.0", "::", ""} else args.host
+    app_url = f"http://{display_host}:{args.port}/"
+    print("TweenSlop Studio is running.")
+    print(f"Open this address in your browser: {app_url}")
+    print("Do not navigate to 0.0.0.0; it is only the server bind address.")
     print("Media files stay in this browser; project metadata is saved to ./data/project.json.")
+    if args.open:
+        threading.Timer(0.8, lambda: webbrowser.open(app_url)).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
